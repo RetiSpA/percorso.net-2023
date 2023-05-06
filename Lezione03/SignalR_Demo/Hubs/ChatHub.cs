@@ -15,6 +15,11 @@ namespace SignalR_Demo.Models
             await Clients.All.SendAsync("ReceiveMessage", user, message);
         }
 
+        public async Task SendGroupMessage(string group, string message)
+        {
+            await Clients.Group(group).SendAsync("ReceiveMessage", message);
+        }
+
         public async Task AddToGroup(string group)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, group);
