@@ -14,6 +14,7 @@ namespace SignalR_Demo
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddControllersWithViews();
+            builder.Services.AddSwaggerGen();
             builder.Services.AddSignalR();
 
             builder.Services.AddAuthentication(options =>
@@ -45,7 +46,7 @@ namespace SignalR_Demo
                         //If the request is for our hub...
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) &&
-                            (path.StartsWithSegments("/chatHub")))
+                            (path.StartsWithSegments("/chatHub"))) //Hub Path
                         {
                             // Read the token out of the query string
                             context.Token = accessToken;
@@ -53,7 +54,6 @@ namespace SignalR_Demo
                         return Task.CompletedTask;
                     }
                 };
-
             });
 
             var app = builder.Build();
@@ -61,6 +61,9 @@ namespace SignalR_Demo
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+
                 app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
@@ -71,6 +74,7 @@ namespace SignalR_Demo
             }
 
             app.UseHttpsRedirection();
+            app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:8080", "https://gourav-d.github.io"));
             app.UseStaticFiles();
 
             app.UseRouting();
